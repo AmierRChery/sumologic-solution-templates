@@ -114,15 +114,9 @@ Parameters:
   Section1aSumoDeployment:
     Type: String
     AllowedValues:
-      - au
-      - ca
-      - de
-      - eu
-      - jp
-      - us2
-      - us1
-      - in
-      - fed
+      - nite
+      - stag
+      - long
     Description: "Enter au, ca, de, eu, jp, us2, in, fed or us1."
   Section1bSumoAccessID:
     Type: String
@@ -338,7 +332,7 @@ Resources:
         - ""
         - - "https://"
           - !FindInMap [RegionMap, !Ref 'AWS::Region', bucketname]
-          - ".s3.amazonaws.com/sumologic-aws-observability/apps/common/resources.template.yaml"
+          - ".s3.amazonaws.com/sumologic-aws-observability-pre-prod/apps/common/resources.template.yaml"
       Parameters:
         SumoLogicDeployment: !Ref Section1aSumoDeployment
         SumoLogicAccessID: !Ref Section1bSumoAccessID

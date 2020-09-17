@@ -6,15 +6,9 @@ Parameters:
   SumoLogicDeployment:
     Type: String
     AllowedValues:
-      - au
-      - ca
-      - de
-      - eu
-      - jp
-      - us2
-      - us1
-      - in
-      - fed
+      - nite
+      - stag
+      - long
     Description: "Enter au, ca, de, eu, jp, us2, in, fed or us1."
   SumoLogicAccessID:
     Type: String
@@ -335,7 +329,7 @@ Resources:
       Runtime: python3.7
       CodeUri:
         Bucket: !FindInMap [RegionMap, !Ref 'AWS::Region', bucketname]
-        Key: "sumologic-aws-observability/apps/SumoLogicAWSObservabilityHelper/SumoLogicAWSObservabilityHelperv2.0.9.zip"
+        Key: "sumologic-aws-observability-pre-prod/apps/SumoLogicAWSObservabilityHelper/SumoLogicAWSObservabilityHelperv2.0.9.zip"
       MemorySize: 128
       Timeout: 900
       Role:
@@ -515,7 +509,7 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              AWS: arn:aws:iam::926226587429:root
+              AWS: arn:aws:iam::246946804217:root
             Action: sts:AssumeRole
             Condition:
               StringEquals:
@@ -641,7 +635,7 @@ Resources:
         - ""
         - - "https://"
           - !FindInMap [RegionMap, !Ref 'AWS::Region', bucketname]
-          - ".s3.amazonaws.com/sumologic-aws-observability/apps/cloudwatchmetrics/cloudwatchmetrics.template.yaml"
+          - ".s3.amazonaws.com/sumologic-aws-observability-pre-prod/apps/cloudwatchmetrics/cloudwatchmetrics.template.yaml"
       Parameters:
         SumoLogicDeployment: !Ref SumoLogicDeployment
         SumoLogicAccessID: !Ref SumoLogicAccessID
@@ -672,7 +666,7 @@ Resources:
         - ""
         - - "https://"
           - !FindInMap [RegionMap, !Ref 'AWS::Region', bucketname]
-          - ".s3.amazonaws.com/sumologic-aws-observability/apps/cloudwatchmetrics/cloudwatchmetrics.template.yaml"
+          - ".s3.amazonaws.com/sumologic-aws-observability-pre-prod/apps/cloudwatchmetrics/cloudwatchmetrics.template.yaml"
       Parameters:
         SumoLogicDeployment: !Ref SumoLogicDeployment
         SumoLogicAccessID: !Ref SumoLogicAccessID
