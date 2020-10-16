@@ -286,7 +286,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Condition: do_not_use_parent_stack
     Properties:
-      TemplateURL: !Sub "https://${Section7bTemplatesBucketName}.s3.amazonaws.com/sumologic-aws-observability/apps/common/resources.template.yaml"
+      TemplateURL: !Sub "https://${Section7bTemplatesBucketName}.s3.amazonaws.com/sumologic-aws-observability-pre-prod/apps/common/resources.template.yaml"
       Parameters:
         SumoLogicDeployment: !Ref Section1aSumoDeployment
         SumoLogicAccessID: !Ref Section1bSumoAccessID

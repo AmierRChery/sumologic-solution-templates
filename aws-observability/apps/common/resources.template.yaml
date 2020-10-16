@@ -283,7 +283,7 @@ Resources:
       Runtime: python3.7
       CodeUri:
         Bucket: !Ref TemplatesBucketName
-        Key: "sumologic-aws-observability/apps/SumoLogicAWSObservabilityHelper/SumoLogicAWSObservabilityHelperv2.0.10.zip"
+        Key: "sumologic-aws-observability-pre-prod/apps/SumoLogicAWSObservabilityHelper/SumoLogicAWSObservabilityHelperv2.0.10.zip"
       MemorySize: 128
       Timeout: 900
       Role:
@@ -572,7 +572,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Condition: install_cloud_watch_metric_source
     Properties:
-      TemplateURL: !Sub "https://${TemplatesBucketName}.s3.amazonaws.com/sumologic-aws-observability/apps/cloudwatchmetrics/cloudwatchmetrics.template.yaml"
+      TemplateURL: !Sub "https://${TemplatesBucketName}.s3.amazonaws.com/sumologic-aws-observability-pre-prod/apps/cloudwatchmetrics/cloudwatchmetrics.template.yaml"
       Parameters:
         SumoLogicDeployment: !Ref SumoLogicDeployment
         SumoLogicAccessID: !Ref SumoLogicAccessID
@@ -598,7 +598,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Condition: install_cloud_watch_metric_source
     Properties:
-      TemplateURL: !Sub "https://${TemplatesBucketName}.s3.amazonaws.com/sumologic-aws-observability/apps/cloudwatchmetrics/cloudwatchmetrics.template.yaml"
+      TemplateURL: !Sub "https://${TemplatesBucketName}.s3.amazonaws.com/sumologic-aws-observability-pre-prod/apps/cloudwatchmetrics/cloudwatchmetrics.template.yaml"
       Parameters:
         SumoLogicDeployment: !Ref SumoLogicDeployment
         SumoLogicAccessID: !Ref SumoLogicAccessID
