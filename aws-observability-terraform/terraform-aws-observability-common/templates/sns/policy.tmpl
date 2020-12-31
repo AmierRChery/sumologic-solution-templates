@@ -1,0 +1,24 @@
+{
+  "Statement": [
+    {
+      "Action": [
+        "sns:Publish"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount":"${aws_account}"
+        },
+        "ArnLike": {
+          "aws:SourceArn":"${bucket_arn}"
+        }
+      },
+      "Effect":"Allow",
+      "Principal": {
+        "Service":"s3.amazonaws.com"
+      },
+      "Resource": [
+        "${sns_topic_arn}"
+      ]
+    }
+  ]
+}
