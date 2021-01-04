@@ -1,23 +1,24 @@
-#TODO
-/*CloudTrailSource:
-  Condition: install_cloudtrail_logs_source
-  Type: Custom::AWSSource
-  Properties:
-    SourceType: AwsCloudTrailBucket
-    ServiceToken: !GetAtt LambdaHelper.Arn
-    Region: !Ref "AWS::Region"
-    SourceName: !Ref CloudTrailLogsSourceName
-    TargetBucketName: !If [create_cloudtrail_bucket, !Ref CommonS3Bucket, !Ref CloudTrailLogsBucketName]
-    RemoveOnDeleteStack: !Ref RemoveSumoLogicResourcesOnDeleteStack
-    SourceCategory: "aws/observability/cloudtrail/logs"
-    CollectorId: !GetAtt SumoLogicHostedCollector.COLLECTOR_ID
-    SumoAccessID: !Ref SumoLogicAccessID
-    SumoAccessKey: !Ref SumoLogicAccessKey
-    SumoDeployment: !Ref SumoLogicDeployment
-    PathExpression: !Ref CloudTrailBucketPathExpression
-    Fields:
-      account: !Ref AccountAlias
-    RoleArn: !GetAtt SumoLogicSourceRole.Arn*/
+resource "sumologic_cloudtrail_source" "this" {
+  for_each = range(var.manage_cloudtrail_logs_source ? 1 : 0)
+
+  category      = "aws/observability/cloudtrail/logs"
+  collector_id  = sumologic_collector[0].hosted.id
+  content_type  = "AwsCloudTrailBucket"
+  name          = var.cloudtrail_logs_source_name
+  paused        = false
+  scan_interval = var.scan_interval
+
+  authentication {
+    type     = "AWSRoleBasedAuthentication"
+    role_arn = aws_iam_role.sumologic_source[0].id
+  }
+
+  path {
+    type            = "S3BucketPathExpression"
+    bucket_name     = var.manage_cloudtrail_bucket ? aws_s3_bucket.common[0].arn : aws_s3_bucket.cloudtrail_logs[0].arn #TODO: s3 bucket for cloudtrail logs does not exist in cft
+    path_expression = var.cloudtrail_s3_bucket_path_expression
+  }
+}
 
 resource "aws_sns_topic" "cloudtrail_source" {
   for_each = range(local.manage_cloudtrail_sns_topic ? 1 : 0)
@@ -46,7 +47,7 @@ resource "aws_sns_topic_subscription" "cloudtrail_source" {
       "backoffFunction"    = "exponential"
     }
   })
-  endpoint  = CloudTrailSource.SUMO_ENDPOINT #TODO: sl resource attr
+  endpoint  = sumologic_cloudtrail_source.this.url
   protocol  = "https"
   topic_arn = var.manage_cloudtrail_bucket ? aws_sns_topic.common[0].arn : aws_sns_topic.cloudtrail_source[0].arn
 }

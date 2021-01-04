@@ -29,7 +29,7 @@ locals {
     "cn-northwest-1" = "037604701340"
   }
 
-  install_collector = var.manage_metadata_source || var.manage_cloudwatch_metrics_source || var.manage_alb_logs_source || var.manage_cloudtrail_logs_source || var.manage_cloudwatch_logs_source
+  manage_collector = var.manage_metadata_source || var.manage_cloudwatch_metrics_source || var.manage_alb_logs_source || var.manage_cloudtrail_logs_source || var.manage_cloudwatch_logs_source
 
   manage_target_s3_bucket = var.manage_alb_s3_bucket || var.manage_cloudtrail_bucket
 

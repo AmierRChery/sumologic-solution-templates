@@ -8,6 +8,7 @@ Terraform module to setup Sumo Logic Sources and supporting AWS Resources for Cl
 |------|---------|
 | terraform | ~> 0.13 |
 | aws | ~> 3.0 |
+| external | ~> 2.0 |
 | sumologic | ~> 2.0 |
 
 ## Providers
@@ -15,6 +16,8 @@ Terraform module to setup Sumo Logic Sources and supporting AWS Resources for Cl
 | Name | Version |
 |------|---------|
 | aws | ~> 3.0 |
+| external | ~> 2.0 |
+| sumologic | ~> 2.0 |
 
 ## Inputs
 
@@ -54,5 +57,7 @@ Terraform module to setup Sumo Logic Sources and supporting AWS Resources for Cl
 | cloudwatch\_logs\_source\_lambda\_arn | Cloudwatch logs source lambda arn. |
 | cloudwatch\_metrics\_namespaces | CloudWatch Metrics Namespaces for Inventory Source. |
 | common\_bucket | Exported attributes for the common bucket. |
+| enterprise\_check | Check whether SumoLogic account is enterprise. |
 | lambda\_helper\_arn | Sumo Logic Lambda Helper ARN |
 | lambda\_role\_arn | Sumo Logic Lambda Helper Role ARN |
+| paid\_check | Check whether SumoLogic account is paid. |

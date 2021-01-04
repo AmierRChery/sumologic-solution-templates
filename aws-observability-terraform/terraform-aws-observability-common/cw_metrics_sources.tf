@@ -26,7 +26,7 @@ resource "aws_cloudformation_stack" "cloudwatch_metrics_sources" {
     "SumoLogicAccessKey"                    = var.sumologic_access_key
     "RemoveSumoLogicResourcesOnDeleteStack" = var.remove_sumologic_resources_on_delete_stack
     "AccountAlias"                          = var.account_alias
-    "SumoLogicCollectorId"                  = SumoLogicHostedCollector.COLLECTOR_ID #TODO: sl resource attr
+    "SumoLogicCollectorId"                  = sumologic_collector.hosted.id
     "LambdaARN"                             = aws_lambda_function.helper.arn
     "SumoLogicSourceRole"                   = aws_iam_role.sumologic_source[0].arn
     "CloudWatchMetricsSourceName"           = var.cloudwatch_metrics_source_name

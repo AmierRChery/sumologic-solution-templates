@@ -1,25 +1,24 @@
-#TODO
-/*ALBSource:
-  Condition: install_alb_logs_source
-  Type: Custom::AWSSource
-  Properties:
-    SourceType: AwsElbBucket
-    ServiceToken: !GetAtt LambdaHelper.Arn
-    Region: !Ref "AWS::Region"
-    SourceName: !Ref ALBLogsSourceName
-    RemoveOnDeleteStack: !Ref RemoveSumoLogicResourcesOnDeleteStack
-    SourceCategory: "aws/observability/alb/logs"
-    CollectorId: !GetAtt SumoLogicHostedCollector.COLLECTOR_ID
-    SumoAccessID: !Ref SumoLogicAccessID
-    SumoAccessKey: !Ref SumoLogicAccessKey
-    SumoDeployment: !Ref SumoLogicDeployment
-    TargetBucketName: !If [create_alb_bucket, !Ref CommonS3Bucket, !Ref ALBS3LogsBucketName]
-    PathExpression: !Ref ALBS3BucketPathExpression
-    Fields:
-      account: !Ref AccountAlias
-      namespace: "aws/applicationelb"
-      region: !Ref "AWS::Region"
-    RoleArn: !GetAtt SumoLogicSourceRole.Arn*/
+resource "sumologic_elb_source" "this" {
+  for_each = range(var.manage_alb_logs_source ? 1 : 0)
+
+  category      = "aws/observability/alb/logs"
+  collector_id  = sumologic_collector[0].hosted.id
+  content_type  = "AwsElbBucket"
+  name          = var.alb_logs_source_name
+  paused        = false
+  scan_interval = var.scan_interval
+
+  authentication {
+    type     = "AWSRoleBasedAuthentication"
+    role_arn = aws_iam_role.sumologic_source[0].id
+  }
+
+  path {
+    type            = "S3BucketPathExpression"
+    bucket_name     = var.manage_alb_bucket ? aws_s3_bucket.common[0].arn : aws_s3_bucket.alb_logs[0].arn #TODO: s3 bucket for alb logs does not exist in cft
+    path_expression = var.alb_s3_bucket_path_expression
+  }
+}
 
 resource "aws_sns_topic" "alb_source" {
   for_each = range(local.manage_alb_sns_topic ? 1 : 0)
@@ -48,7 +47,7 @@ resource "aws_sns_topic_subscription" "alb_source" {
       "backoffFunction"    = "exponential"
     }
   })
-  endpoint  = CloudTrailSource.SUMO_ENDPOINT #TODO: sl resource attr
+  endpoint  = sumologic_elb_source.this.url
   protocol  = "https"
   topic_arn = var.manage_alb_bucket ? aws_sns_topic.common[0].arn : aws_sns_topic.alb_source[0].arn
 }

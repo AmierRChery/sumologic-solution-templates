@@ -1,27 +1,29 @@
-#TODO
-/*AccountCheck:
-  Type: Custom::EnterpriseOrTrialAccountCheck
-  Properties:
-    ServiceToken: !GetAtt LambdaHelper.Arn
-    Region: !Ref "AWS::Region"
-    SumoAccessID: !Ref SumoLogicAccessID
-    SumoAccessKey: !Ref SumoLogicAccessKey
-    SumoDeployment: !Ref SumoLogicDeployment
+resource "sumologic_metadata_source" "this" {
+  for_each = range(local.manage_metadata_source ? 1 : 0)
 
-############# START - RESOURCES FOR METADATA SOURCE #################
+  category      = "aws/observability/ec2/metadata"
+  collector_id  = sumologic_collector[0].hosted.id
+  content_type  = "AwsMetadata"
+  name          = var.metadata_source_name
+  paused        = false
+  scan_interval = var.scan_interval
 
-SumoLogicMetaDataSource:
-  Condition: install_metadata_source
-  Type: Custom::AWSSource
-  Properties:
-    ServiceToken: !GetAtt LambdaHelper.Arn
-    Region: !Ref "AWS::Region"
-    RemoveOnDeleteStack: !Ref RemoveSumoLogicResourcesOnDeleteStack
-    SourceType: AwsMetadata
-    SourceName: !Ref MetaDataSourceName
-    SourceCategory: "aws/observability/ec2/metadata"
-    CollectorId: !GetAtt SumoLogicHostedCollector.COLLECTOR_ID
-    SumoAccessID: !Ref SumoLogicAccessID
-    SumoAccessKey: !Ref SumoLogicAccessKey
-    SumoDeployment: !Ref SumoLogicDeployment
-    RoleArn: !GetAtt SumoLogicSourceRole.Arn*/
+  authentication {
+    type     = "AWSRoleBasedAuthentication"
+    role_arn = aws_iam_role.sumologic_source[0].id
+  }
+
+  path {
+    type                = "AwsMetadataPath"
+    limit_to_namespaces = ["AWS/EC2"]
+  }
+}
+
+#TODO: knowledge transfer
+data "external" "account_check" {
+  program = ["echo", "account_check"]
+
+  query = {
+    account_id = "id"
+  }
+}

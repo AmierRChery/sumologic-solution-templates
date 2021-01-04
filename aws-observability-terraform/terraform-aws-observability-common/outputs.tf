@@ -18,13 +18,15 @@ output "cloudwatch_logs_source_lambda_arn" {
   description = "Cloudwatch logs source lambda arn."
 }
 
-#TODO
-/*EnterpriseCheck:
-  Description: "Check If Account is Enterprise or Not"
-  Value: !GetAtt AccountCheck.is_enterprise
-PaidAccountCheck:
-  Description: "Check If Account is Paid or Not"
-  Value: !GetAtt AccountCheck.is_paid*/
+output "enterprise_check" {
+  value       = data.external.account_check.result.enterprise #TODO: update namespace
+  description = "Check whether SumoLogic account is enterprise."
+}
+
+output "paid_check" {
+  value       = data.external.account_check.result.paid #TODO: update namespace
+  description = "Check whether SumoLogic account is paid."
+}
 
 output "cloudwatch_metrics_namespaces" {
   value       = var.cloudwatch_metrics_namespaces
