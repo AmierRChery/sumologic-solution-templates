@@ -15,7 +15,7 @@ resource "sumologic_cloudtrail_source" "this" {
 
   path {
     type            = "S3BucketPathExpression"
-    bucket_name     = var.manage_cloudtrail_bucket ? aws_s3_bucket.common[0].arn : aws_s3_bucket.cloudtrail_logs[0].arn #TODO: s3 bucket for cloudtrail logs does not exist in cft
+    bucket_name     = var.manage_cloudtrail_bucket ? aws_s3_bucket.common[0].id : var.cloudtrail_logs_s3_bucket
     path_expression = var.cloudtrail_s3_bucket_path_expression
   }
 }
@@ -23,14 +23,14 @@ resource "sumologic_cloudtrail_source" "this" {
 resource "aws_sns_topic" "cloudtrail_source" {
   for_each = range(local.manage_cloudtrail_sns_topic ? 1 : 0)
 
-  name = "cloudtrail-sumo-sns-${var.account_alias}-" # TODO: verify
+  name = "cloudtrail-sumo-sns-${var.account_alias}-"
 }
 
 resource "aws_sns_topic_policy" "cloudtrail_source" {
   for_each = range(local.manage_cloudtrail_sns_topic ? 1 : 0)
 
   arn    = aws_sns_topic.cloudtrail_source[0].arn
-  policy = templatefile("${path.module}/templates/sns/policy.tmpl", { bucket_arn = aws_s3_bucket.cloudtrail_logs.arn, sns_topic_arn = aws_sns_topic.cloudtrail_source[0].arn, aws_account = data.aws_caller_identity.current.id }) #TODO: s3 bucket for cloudtrail logs does not exist in cft
+  policy = templatefile("${path.module}/templates/sns/policy.tmpl", { bucket_arn = var.manage_cloudtrail_bucket ? aws_s3_bucket.common[0].arn : "arn:aws:s3:::${var.cloudtrail_logs_s3_bucket}", sns_topic_arn = aws_sns_topic.cloudtrail_source[0].arn, aws_account = data.aws_caller_identity.current.id })
 }
 
 resource "aws_sns_topic_subscription" "cloudtrail_source" {

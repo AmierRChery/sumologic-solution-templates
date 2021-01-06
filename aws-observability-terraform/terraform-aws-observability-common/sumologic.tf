@@ -19,7 +19,7 @@ resource "sumologic_metadata_source" "this" {
   }
 }
 
-#TODO: knowledge transfer
+#TODO: sumoresource.py
 data "external" "account_check" {
   program = ["echo", "account_check"]
 

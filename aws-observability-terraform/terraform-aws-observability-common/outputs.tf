@@ -18,13 +18,13 @@ output "cloudwatch_logs_source_lambda_arn" {
   description = "Cloudwatch logs source lambda arn."
 }
 
-output "enterprise_check" {
-  value       = data.external.account_check.result.enterprise #TODO: update namespace
+output "enterprise_account" {
+  value       = data.external.account_check.result.enterprise
   description = "Check whether SumoLogic account is enterprise."
 }
 
-output "paid_check" {
-  value       = data.external.account_check.result.paid #TODO: update namespace
+output "paid_account" {
+  value       = data.external.account_check.result.paid
   description = "Check whether SumoLogic account is paid."
 }
 

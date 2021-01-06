@@ -5,7 +5,7 @@ resource "sumologic_http_source" "cloudwatch_logs" {
   collector_id = sumologic_collector[0].hosted.id
   name         = var.cloudwatch_logs_source_name
 
-  filters { #TODO
+  filters { #TODO: ask about arg mismatch
     /*Fields:
         account: !Ref AccountAlias
         namespace: "aws/lambda"
@@ -19,7 +19,7 @@ resource "sumologic_http_source" "cloudwatch_logs" {
 resource "aws_iam_role" "cloudwatch_logs_source_lambda" {
   for_each = range(var.manage_cloudwatch_logs_source ? 1 : 0)
 
-  name = "SumoCWLambdaExecutionRole" #TODO: verify
+  name = "SumoCWLambdaExecutionRole"
   path = "/"
 
   assume_role_policy = <<EOF
@@ -41,7 +41,7 @@ EOF
 resource "aws_iam_role_policy" "cloudwatch_logs_source_lambda_sqs" {
   for_each = range(var.manage_cloudwatch_logs_source ? 1 : 0)
 
-  name = "SQSCreateLogsRolePolicy" #TODO: verify
+  name = "SQSCreateLogsRolePolicy"
   role = aws_iam_role.cloudwatch_logs_source_lambda[0].id
 
   policy = <<EOF
@@ -76,7 +76,7 @@ EOF
 resource "aws_iam_role_policy" "cloudwatch_logs_source_lambda_logs" {
   for_each = range(var.manage_cloudwatch_logs_source ? 1 : 0)
 
-  name = "CloudWatchCreateLogsRolePolicy" #TODO: verify
+  name = "CloudWatchCreateLogsRolePolicy"
   role = aws_iam_role.cloudwatch_logs_source_lambda[0].id
 
   policy = <<EOF
@@ -90,7 +90,7 @@ resource "aws_iam_role_policy" "cloudwatch_logs_source_lambda_logs" {
       "logs:PutLogEvents",
       "logs:DescribeLogStreams"
     ],
-    "Resource": "log-group*" #TODO: check against account
+    "Resource": "${aws_cloudwatch_log_group.cloudwatch_logs_source.arn}"
   }]
 }
 EOF
@@ -119,7 +119,7 @@ EOF
 resource "aws_lambda_function" "cloudwatch_logs_source_logs" {
   for_each = range(var.manage_cloudwatch_logs_source ? 1 : 0)
 
-  function_name = "SumoCWLogsLambda" #TODO: verify
+  function_name = "SumoCWLogsLambda"
   handler       = "cloudwatchlogs_lambda.handler"
   runtime       = "nodejs10.x"
   role          = aws_iam_role.cloudwatch_logs_source_lambda[0].arn
@@ -153,7 +153,7 @@ resource "aws_lambda_permission" "cloudwatch_logs_source_logs" {
 resource "aws_lambda_function" "cloudwatch_logs_source_process_deadletter" {
   for_each = range(var.manage_cloudwatch_logs_source ? 1 : 0)
 
-  function_name = "SumoCWProcessDLQLambda" #TODO: verify
+  function_name = "SumoCWProcessDLQLambda"
   handler       = "DLQProcessor.handler"
   runtime       = "nodejs10.x"
   role          = aws_iam_role.cloudwatch_logs_source_lambda[0].arn
@@ -183,7 +183,7 @@ resource "aws_lambda_permission" "cloudwatch_logs_source_process_deadletter" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.cloudwatch_logs_source_process_deadletter[0].function_name
   principal     = "events.amazonaws.com"
-  source_arn    = cw_process_dlq_schedule_rule.arn #TODO: update namespace
+  source_arn    = aws_cloudwatch_event_rule.cloudwatch_logs_source_process_deadletter.arn
 }
 
 resource "aws_cloudwatch_event_rule" "cloudwatch_logs_source_process_deadletter" {
@@ -205,7 +205,7 @@ resource "aws_cloudwatch_event_target" "yada" {
 resource "aws_sqs_queue" "cloudwatch_logs_source_deadletter" {
   for_each = range(var.manage_cloudwatch_logs_source ? 1 : 0)
 
-  name = "SumoCWDeadLetterQueue" #TODO: verify
+  name = "SumoCWDeadLetterQueue"
 }
 
 resource "aws_sns_topic" "cloudwatch_logs_source_email" {
@@ -235,7 +235,7 @@ resource "aws_cloudwatch_log_subscription_filter" "cloudwatch_logs_source" {
 resource "aws_cloudwatch_log_group" "cloudwatch_logs_source" {
   for_each = range(var.manage_cloudwatch_logs_source ? 1 : 0)
 
-  name              = "SumoCWLogGroup" #TODO: verify
+  name              = "SumoCWLogGroup"
   retention_in_days = 7
 }
 

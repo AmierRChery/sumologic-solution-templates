@@ -215,6 +215,6 @@ variable "log_stream_prefix" {
 
 variable "templates_bucket" {
   type        = string
-  description = "Name of the S3 bucket containing nested CFTs."
-  default     = "appdevzipfiles-us-east-1"
+  description = "Prefix of the S3 bucket containing nested CFTs and Lambda code."
+  default     = "appdevzipfiles"
 }

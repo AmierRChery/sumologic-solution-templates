@@ -4,7 +4,7 @@ resource "sumologic_collector" "hosted" {
   name = var.collector_name
 }
 
-#TODO: pending on xls
+#TODO: check lambda code in zip file
 /*CreateSumoLogicAWSExplorerView:
   Type: Custom::SumoLogicAWSExplorer
   Properties:

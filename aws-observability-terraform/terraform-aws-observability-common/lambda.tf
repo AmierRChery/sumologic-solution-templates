@@ -50,7 +50,7 @@ resource "aws_lambda_function" "helper" {
   handler       = "main.handler"
   runtime       = "python3.7"
   role          = aws_iam_role.lambda.arn
-  s3_bucket     = var.templates_bucket
+  s3_bucket     = "${var.templates_bucket}-${data.aws_region.current.id}"
   s3_key        = "sumologic-aws-observability/apps/SumoLogicAWSObservabilityHelper/SumoLogicAWSObservabilityHelperv2.0.10.zip"
   timeout       = 900
 }
