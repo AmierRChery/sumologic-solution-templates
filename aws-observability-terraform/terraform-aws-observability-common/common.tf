@@ -1,7 +1,7 @@
 resource "aws_sns_topic" "common" {
   for_each = range(local.manage_target_s3_bucket ? 1 : 0)
 
-  name = "sumo-sns-topic-${var.account_alias}-"
+  name = "sumo-sns-topic-${var.account_alias}"
 }
 
 resource "aws_sns_topic_policy" "common" {
@@ -14,7 +14,7 @@ resource "aws_sns_topic_policy" "common" {
 resource "aws_s3_bucket" "common" {
   for_each = range(local.manage_target_s3_bucket ? 1 : 0)
 
-  bucket = "aws-observability-logs-"
+  bucket = "aws-observability-logs-${var.account_alias}"
 }
 
 resource "aws_s3_bucket_notification" "common" {

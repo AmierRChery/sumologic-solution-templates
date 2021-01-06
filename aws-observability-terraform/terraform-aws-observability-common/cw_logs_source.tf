@@ -44,33 +44,7 @@ resource "aws_iam_role_policy" "cloudwatch_logs_source_lambda_sqs" {
   name = "SQSCreateLogsRolePolicy"
   role = aws_iam_role.cloudwatch_logs_source_lambda[0].id
 
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [{
-    "Effect": "Allow",
-    "Action": [
-      "sqs:DeleteMessage",
-      "sqs:GetQueueUrl",
-      "sqs:ListQueues",
-      "sqs:ChangeMessageVisibility",
-      "sqs:SendMessageBatch",
-      "sqs:ReceiveMessage",
-      "sqs:SendMessage",
-      "sqs:GetQueueAttributes",
-      "sqs:ListQueueTags",
-      "sqs:ListDeadLetterSourceQueues",
-      "sqs:DeleteMessageBatch",
-      "sqs:PurgeQueue",
-      "sqs:DeleteQueue",
-      "sqs:CreateQueue",
-      "sqs:ChangeMessageVisibilityBatch",
-      "sqs:SetQueueAttributes"
-    ],
-    "Resource": "${aws_sqs_queue.cloudwatch_logs_source_deadletter[0].arn}"
-  ]}
-}
-EOF
+  policy = templatefile("${path.module}/templates/iam/cloudwatch_logs_source_lambda_sqs.tmpl", { cloudwatch_logs_source_deadletter_arn = aws_sqs_queue.cloudwatch_logs_source_deadletter[0].arn })
 }
 
 resource "aws_iam_role_policy" "cloudwatch_logs_source_lambda_logs" {
@@ -79,21 +53,7 @@ resource "aws_iam_role_policy" "cloudwatch_logs_source_lambda_logs" {
   name = "CloudWatchCreateLogsRolePolicy"
   role = aws_iam_role.cloudwatch_logs_source_lambda[0].id
 
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [{
-    "Effect": "Allow",
-    "Action": [
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-      "logs:DescribeLogStreams"
-    ],
-    "Resource": "${aws_cloudwatch_log_group.cloudwatch_logs_source.arn}"
-  }]
-}
-EOF
+  policy = templatefile("${path.module}/templates/iam/cloudwatch_logs_source_lambda_logs.tmpl", { cloudwatch_logs_source_log_group_arn = aws_cloudwatch_log_group.cloudwatch_logs_source[0].arn })
 }
 
 resource "aws_iam_role_policy" "cloudwatch_logs_source_lambda_lambda" {
@@ -102,18 +62,7 @@ resource "aws_iam_role_policy" "cloudwatch_logs_source_lambda_lambda" {
   name = "InvokeLambdaRolePolicy"
   role = aws_iam_role.cloudwatch_logs_source_lambda[0].id
 
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [{
-    "Effect": "Allow",
-    "Action": [
-      "lambda:InvokeFunction"
-    ],
-    "Resource": "${aws_lambda_function.cloudwatch_logs_source_logs[0].arn}"
-  }]
-}
-EOF
+  policy = templatefile("${path.module}/templates/iam/cloudwatch_logs_source_lambda_lambda.tmpl", { cloudwatch_logs_source_lambda_arn = aws_lambda_function.cloudwatch_logs_source_logs[0].arn })
 }
 
 resource "aws_lambda_function" "cloudwatch_logs_source_logs" {

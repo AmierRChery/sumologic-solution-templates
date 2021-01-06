@@ -1,5 +1,5 @@
 resource "aws_iam_role" "lambda" {
-  name = "lambda"
+  name = "LambdaRole"
   path = "/"
 
   assume_role_policy = <<EOF

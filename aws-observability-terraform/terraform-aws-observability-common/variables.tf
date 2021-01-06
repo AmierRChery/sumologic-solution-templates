@@ -38,12 +38,6 @@ variable "sumologic_organization_id" {
   }
 }
 
-variable "remove_sumologic_resources_on_delete_stack" {
-  type        = bool
-  default     = true
-  description = "Whether to delete collectors, sources, and apps when the stack is deleted. Deletes the resources created by the stack. Deletion of updated resources will be skipped."
-}
-
 variable "account_alias" {
   type        = string
   description = "Provide an Alias for the AWS account for identification in Sumo Logic Explorer View, metrics, and logs. Please do not include special characters."

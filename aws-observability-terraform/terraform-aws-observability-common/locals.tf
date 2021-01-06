@@ -27,6 +27,18 @@ locals {
     "cn-northwest-1" = "037604701340"
   }
 
+  namespace_scan_interval = {
+    "ApplicationELB" = 60000,
+    "ApiGateway"     = 300000,
+    "DynamoDB"       = 300000,
+    "Lambda"         = 300000,
+    "RDS"            = 300000,
+    "ECS"            = 300000,
+    "ElastiCache"    = 300000,
+    "ELB"            = 300000,
+    "NetworkELB"     = 60000
+  }
+
   manage_collector = var.manage_metadata_source || var.manage_cloudwatch_metrics_source || var.manage_alb_logs_source || var.manage_cloudtrail_logs_source || var.manage_cloudwatch_logs_source
 
   manage_target_s3_bucket = var.manage_alb_s3_bucket || var.manage_cloudtrail_bucket

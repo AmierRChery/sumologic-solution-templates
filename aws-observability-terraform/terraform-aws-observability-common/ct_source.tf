@@ -23,7 +23,7 @@ resource "sumologic_cloudtrail_source" "this" {
 resource "aws_sns_topic" "cloudtrail_source" {
   for_each = range(local.manage_cloudtrail_sns_topic ? 1 : 0)
 
-  name = "cloudtrail-sumo-sns-${var.account_alias}-"
+  name = "cloudtrail-sumo-sns-${var.account_alias}"
 }
 
 resource "aws_sns_topic_policy" "cloudtrail_source" {
