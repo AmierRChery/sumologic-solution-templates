@@ -1,5 +1,3 @@
-data "aws_caller_identity" "current" {}
-
 locals {
   region_to_elb_account_id = {
     "us-east-1"      = "127311923021",

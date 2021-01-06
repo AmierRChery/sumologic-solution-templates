@@ -14,7 +14,7 @@ output "common_bucket" {
 }
 
 output "cloudwatch_logs_source_lambda_arn" {
-  value       = aws_cloudformation_stack.cloudwatch_logs_source.outputs.SumoCWLogsLambdaArn
+  value       = aws_lambda_function.cloudwatch_logs_source_logs.arn
   description = "Cloudwatch logs source lambda arn."
 }
 

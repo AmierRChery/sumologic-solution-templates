@@ -173,6 +173,46 @@ variable "cloudwatch_logs_source_name" {
   default     = ""
 }
 
+variable "email_id" {
+  type        = string
+  default     = "test@gmail.com"
+  description = "Email for receiving alerts. A confirmation email is sent after the deployment is complete. It can be confirmed to subscribe for alerts."
+
+  validation {
+    condition     = can(regex("\\w+@\\w+\\.\\w+", var.email_id))
+    error_message = "Email address must be valid."
+  }
+}
+
+variable "workers" {
+  type        = number
+  default     = 4
+  description = "Number of lambda function invocations for Cloudwatch logs source Dead Letter Queue processing."
+}
+
+variable "log_format" {
+  type        = string
+  default     = "Others"
+  description = "Service for Cloudwatch logs source."
+
+  validation {
+    condition     = contains(["VPC-RAW", "VPC-JSON", "Others"], var.log_format)
+    error_message = "Log format service must be be one of VPC-RAW, VPC-JSON, or Others."
+  }
+}
+
+variable "include_log_group_info" {
+  type        = bool
+  default     = false #TODO: module declare should override to true
+  description = "Enable loggroup/logstream values in logs."
+}
+
+variable "log_stream_prefix" {
+  type        = list(string)
+  default     = []
+  description = "LogStream name prefixes to filter by logStream. Please note this is separate from a logGroup. This is used only to send certain logStreams within a Cloudwatch logGroup(s). LogGroups still need to be subscribed to the created Lambda function regardless of this input value."
+}
+
 variable "templates_bucket" {
   type        = string
   description = "Name of the S3 bucket containing nested CFTs."
