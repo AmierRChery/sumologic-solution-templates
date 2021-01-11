@@ -1,27 +1,30 @@
-#TODO
-/*AccountCheck:
-  Type: Custom::EnterpriseOrTrialAccountCheck
-  Properties:
-    ServiceToken: !GetAtt LambdaHelper.Arn
-    Region: !Ref "AWS::Region"
-    SumoAccessID: !Ref SumoLogicAccessID
-    SumoAccessKey: !Ref SumoLogicAccessKey
-    SumoDeployment: !Ref SumoLogicDeployment
+resource "sumologic_metadata_source" "this" {
+  for_each = toset(var.manage_metadata_source ? ["this"] : [])
 
-############# START - RESOURCES FOR METADATA SOURCE #################
+  category      = "aws/observability/ec2/metadata"
+  collector_id  = sumologic_collector.hosted["this"].id
+  content_type  = "AwsMetadata"
+  name          = var.metadata_source_name
+  paused        = false
+  scan_interval = var.scan_interval
 
-SumoLogicMetaDataSource:
-  Condition: install_metadata_source
-  Type: Custom::AWSSource
-  Properties:
-    ServiceToken: !GetAtt LambdaHelper.Arn
-    Region: !Ref "AWS::Region"
-    RemoveOnDeleteStack: !Ref RemoveSumoLogicResourcesOnDeleteStack
-    SourceType: AwsMetadata
-    SourceName: !Ref MetaDataSourceName
-    SourceCategory: "aws/observability/ec2/metadata"
-    CollectorId: !GetAtt SumoLogicHostedCollector.COLLECTOR_ID
-    SumoAccessID: !Ref SumoLogicAccessID
-    SumoAccessKey: !Ref SumoLogicAccessKey
-    SumoDeployment: !Ref SumoLogicDeployment
-    RoleArn: !GetAtt SumoLogicSourceRole.Arn*/
+  authentication {
+    type     = "AWSRoleBasedAuthentication"
+    role_arn = aws_iam_role.sumologic_source["this"].id
+  }
+
+  path {
+    type                = "AwsMetadataPath"
+    limit_to_namespaces = ["AWS/EC2"]
+  }
+}
+
+#TODO: sumoresource.py
+data "external" "account_check" {
+  program = ["echo", "-e", "{\"enterprise\":\"true\",\"paid\":\"true\"}"]
+
+  query = {
+    account_id = "id"
+  }
+}
+# Error: command "echo" produced invalid JSON: json: cannot unmarshal bool into Go value of type string

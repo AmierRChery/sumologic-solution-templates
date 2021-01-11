@@ -1,30 +1,18 @@
-#TODO
+resource "sumologic_collector" "hosted" {
+  for_each = toset(local.manage_collector ? ["this"] : [])
+
+  name = var.collector_name
+}
+
+#TODO: check lambda code in zip file
 /*CreateSumoLogicAWSExplorerView:
   Type: Custom::SumoLogicAWSExplorer
   Properties:
-    ServiceToken: !GetAtt LambdaHelper.Arn
-    RemoveOnDeleteStack: false
     HierarchyName: "AWS Observability"
-    HierarchyLevel: {"entityType":"account","nextLevelsWithConditions":[],"nextLevel":{"entityType":"region","nextLevelsWithConditions":[],"nextLevel":{"entityType":"namespace","nextLevelsWithConditions":[{"condition":"AWS/ApplicationElb","level":{"entityType":"loadbalancer","nextLevelsWithConditions":[]}},{"condition":"AWS/ApiGateway","level":{"entityType":"apiname","nextLevelsWithConditions":[]}},{"condition":"AWS/DynamoDB","level":{"entityType":"tablename","nextLevelsWithConditions":[]}},{"condition":"AWS/EC2","level":{"entityType":"instanceid","nextLevelsWithConditions":[]}},{"condition":"AWS/RDS","level":{"entityType":"dbidentifier","nextLevelsWithConditions":[]}},{"condition":"AWS/Lambda","level":{"entityType":"functionname","nextLevelsWithConditions":[]}}]}}}
-    SumoAccessID: !Ref SumoLogicAccessID
-    SumoAccessKey: !Ref SumoLogicAccessKey
-    SumoDeployment: !Ref SumoLogicDeployment
-
-    SumoLogicHostedCollector:
-      Type: Custom::Collector
-      Condition: install_collector
-      Properties:
-        ServiceToken: !GetAtt LambdaHelper.Arn
-        Region: !Ref "AWS::Region"
-        CollectorType: Hosted
-        RemoveOnDeleteStack: !Ref RemoveSumoLogicResourcesOnDeleteStack
-        CollectorName: !Ref CollectorName
-        SumoAccessID: !Ref SumoLogicAccessID
-        SumoAccessKey: !Ref SumoLogicAccessKey
-        SumoDeployment: !Ref SumoLogicDeployment*/
+    HierarchyLevel: {"entityType":"account","nextLevelsWithConditions":[],"nextLevel":{"entityType":"region","nextLevelsWithConditions":[],"nextLevel":{"entityType":"namespace","nextLevelsWithConditions":[{"condition":"AWS/ApplicationElb","level":{"entityType":"loadbalancer","nextLevelsWithConditions":[]}},{"condition":"AWS/ApiGateway","level":{"entityType":"apiname","nextLevelsWithConditions":[]}},{"condition":"AWS/DynamoDB","level":{"entityType":"tablename","nextLevelsWithConditions":[]}},{"condition":"AWS/EC2","level":{"entityType":"instanceid","nextLevelsWithConditions":[]}},{"condition":"AWS/RDS","level":{"entityType":"dbidentifier","nextLevelsWithConditions":[]}},{"condition":"AWS/Lambda","level":{"entityType":"functionname","nextLevelsWithConditions":[]}}]}}}*/
 
 resource "aws_iam_role" "sumologic_source" {
-  for_each = range(local.manage_sumologic_source_role ? 1 : 0)
+  for_each = toset(local.manage_sumologic_source_role ? ["this"] : [])
 
   name = "sumologic-source"
   path = "/"
@@ -51,8 +39,10 @@ EOF
 }
 
 resource "aws_iam_role_policy" "sumologic_source" {
+  for_each = toset(local.manage_sumologic_source_role ? ["this"] : [])
+
   name = "SumoLogicAwsSourcesPolicies"
-  role = aws_iam_role.sumologic_source[0].id
+  role = aws_iam_role.sumologic_source["this"].id
 
   policy = <<EOF
 {

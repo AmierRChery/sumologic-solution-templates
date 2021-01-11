@@ -38,12 +38,6 @@ variable "sumologic_organization_id" {
   }
 }
 
-variable "remove_sumologic_resources_on_delete_stack" {
-  type        = bool
-  default     = true
-  description = "Whether to delete collectors, sources, and apps when the stack is deleted. Deletes the resources created by the stack. Deletion of updated resources will be skipped."
-}
-
 variable "account_alias" {
   type        = string
   description = "Provide an Alias for the AWS account for identification in Sumo Logic Explorer View, metrics, and logs. Please do not include special characters."
@@ -90,7 +84,8 @@ variable "cloudwatch_metrics_namespaces" {
   description = "List of the Cloudwatch metrics namespaces."
 
   validation {
-    condition     = [for namespace in var.cloudwatch_metrics_namespaces : can(regex("AWS/(?:ApplicationELB|ApiGateway|DynamoDB|Lambda|RDS|ECS|ElastiCache|ELB|NetworkELB)", namespace))]
+    # regex check that each element of the input namespaces is one of the accepted values, contains check if any of the can function returns was false, return false from logical if any of the returns were false
+    condition     = contains([for namespace in var.cloudwatch_metrics_namespaces : can(regex("AWS/(?:ApplicationELB|ApiGateway|DynamoDB|Lambda|RDS|ECS|ElastiCache|ELB|NetworkELB)", namespace))], false) != true
     error_message = "Namespaces should be from provided default list."
   }
 }
@@ -173,8 +168,48 @@ variable "cloudwatch_logs_source_name" {
   default     = ""
 }
 
+variable "email_id" {
+  type        = string
+  default     = "test@gmail.com"
+  description = "Email for receiving alerts. A confirmation email is sent after the deployment is complete. It can be confirmed to subscribe for alerts."
+
+  validation {
+    condition     = can(regex("\\w+@\\w+\\.\\w+", var.email_id))
+    error_message = "Email address must be valid."
+  }
+}
+
+variable "workers" {
+  type        = number
+  default     = 4
+  description = "Number of lambda function invocations for Cloudwatch logs source Dead Letter Queue processing."
+}
+
+variable "log_format" {
+  type        = string
+  default     = "Others"
+  description = "Service for Cloudwatch logs source."
+
+  validation {
+    condition     = contains(["VPC-RAW", "VPC-JSON", "Others"], var.log_format)
+    error_message = "Log format service must be be one of VPC-RAW, VPC-JSON, or Others."
+  }
+}
+
+variable "include_log_group_info" {
+  type        = bool
+  default     = false
+  description = "Enable loggroup/logstream values in logs."
+}
+
+variable "log_stream_prefix" {
+  type        = list(string)
+  default     = []
+  description = "LogStream name prefixes to filter by logStream. Please note this is separate from a logGroup. This is used only to send certain logStreams within a Cloudwatch logGroup(s). LogGroups still need to be subscribed to the created Lambda function regardless of this input value."
+}
+
 variable "templates_bucket" {
   type        = string
-  description = "Name of the S3 bucket containing nested CFTs."
-  default     = "appdevzipfiles-us-east-1"
+  description = "Prefix of the S3 bucket containing nested CFTs and Lambda code."
+  default     = "appdevzipfiles"
 }

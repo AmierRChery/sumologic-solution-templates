@@ -8,6 +8,7 @@ Terraform module to setup Sumo Logic Sources and supporting AWS Resources for Cl
 |------|---------|
 | terraform | ~> 0.13 |
 | aws | ~> 3.0 |
+| external | ~> 2.0 |
 | sumologic | ~> 2.0 |
 
 ## Providers
@@ -15,6 +16,8 @@ Terraform module to setup Sumo Logic Sources and supporting AWS Resources for Cl
 | Name | Version |
 |------|---------|
 | aws | ~> 3.0 |
+| external | ~> 2.0 |
+| sumologic | ~> 2.0 |
 
 ## Inputs
 
@@ -31,6 +34,10 @@ Terraform module to setup Sumo Logic Sources and supporting AWS Resources for Cl
 | cloudwatch\_metrics\_namespaces | List of the Cloudwatch metrics namespaces. | `list(string)` | <pre>[<br>  "AWS/ApplicationELB, AWS/ApiGateway, AWS/DynamoDB, AWS/Lambda, AWS/RDS, AWS/ECS, AWS/ElastiCache, AWS/ELB, AWS/NetworkELB"<br>]</pre> | no |
 | cloudwatch\_metrics\_source\_name | Cloudwatch metrics source name to override the default. If unspecified, the default name will be used. | `string` | `""` | no |
 | collector\_name | Name of the SumoLogic collector. | `string` | `""` | no |
+| email\_id | Email for receiving alerts. A confirmation email is sent after the deployment is complete. It can be confirmed to subscribe for alerts. | `string` | `"test@gmail.com"` | no |
+| include\_log\_group\_info | Enable loggroup/logstream values in logs. | `bool` | `false` | no |
+| log\_format | Service for Cloudwatch logs source. | `string` | `"Others"` | no |
+| log\_stream\_prefix | LogStream name prefixes to filter by logStream. Please note this is separate from a logGroup. This is used only to send certain logStreams within a Cloudwatch logGroup(s). LogGroups still need to be subscribed to the created Lambda function regardless of this input value. | `list(string)` | `[]` | no |
 | manage\_alb\_logs\_source | Whether to manage the Sumo Logic ALB Log Source with provided bucket Name. | `bool` | `false` | no |
 | manage\_alb\_s3\_bucket | Whether to manage the S3 bucket for ALB. Do not enable if you preconfigured a S3 bucket for this purpose. | `bool` | `false` | no |
 | manage\_cloudtrail\_bucket | Whether to manage the Cloudtrail S3 bucket. Do not enable if you preconfigured a S3 bucket for Cloudtrail. | `bool` | `false` | no |
@@ -45,7 +52,8 @@ Terraform module to setup Sumo Logic Sources and supporting AWS Resources for Cl
 | sumologic\_access\_key | SumoLogic access key for API invocations. | `string` | n/a | yes |
 | sumologic\_environment | SumoLogic environment abbreviation. | `string` | n/a | yes |
 | sumologic\_organization\_id | Appears on the Account Overview page that displays information about your Sumo Logic organization. Used for IAM Role in Sumo Logic AWS Sources. | `string` | n/a | yes |
-| templates\_bucket | Name of the S3 bucket containing nested CFTs. | `string` | `"appdevzipfiles-us-east-1"` | no |
+| templates\_bucket | Prefix of the S3 bucket containing nested CFTs and Lambda code. | `string` | `"appdevzipfiles"` | no |
+| workers | Number of lambda function invocations for Cloudwatch logs source Dead Letter Queue processing. | `number` | `4` | no |
 
 ## Outputs
 
@@ -54,5 +62,7 @@ Terraform module to setup Sumo Logic Sources and supporting AWS Resources for Cl
 | cloudwatch\_logs\_source\_lambda\_arn | Cloudwatch logs source lambda arn. |
 | cloudwatch\_metrics\_namespaces | CloudWatch Metrics Namespaces for Inventory Source. |
 | common\_bucket | Exported attributes for the common bucket. |
+| enterprise\_account | Check whether SumoLogic account is enterprise. |
 | lambda\_helper\_arn | Sumo Logic Lambda Helper ARN |
 | lambda\_role\_arn | Sumo Logic Lambda Helper Role ARN |
+| paid\_account | Check whether SumoLogic account is paid. |

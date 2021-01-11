@@ -14,17 +14,19 @@ output "common_bucket" {
 }
 
 output "cloudwatch_logs_source_lambda_arn" {
-  value       = aws_cloudformation_stack.cloudwatch_logs_source.outputs.SumoCWLogsLambdaArn
+  value       = var.manage_cloudwatch_logs_source ? aws_lambda_function.cloudwatch_logs_source_logs["this"].arn : ""
   description = "Cloudwatch logs source lambda arn."
 }
 
-#TODO
-/*EnterpriseCheck:
-  Description: "Check If Account is Enterprise or Not"
-  Value: !GetAtt AccountCheck.is_enterprise
-PaidAccountCheck:
-  Description: "Check If Account is Paid or Not"
-  Value: !GetAtt AccountCheck.is_paid*/
+output "enterprise_account" {
+  value       = data.external.account_check.result.enterprise
+  description = "Check whether SumoLogic account is enterprise."
+}
+
+output "paid_account" {
+  value       = data.external.account_check.result.paid
+  description = "Check whether SumoLogic account is paid."
+}
 
 output "cloudwatch_metrics_namespaces" {
   value       = var.cloudwatch_metrics_namespaces
