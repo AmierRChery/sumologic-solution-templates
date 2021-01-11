@@ -14,7 +14,7 @@ output "common_bucket" {
 }
 
 output "cloudwatch_logs_source_lambda_arn" {
-  value       = aws_lambda_function.cloudwatch_logs_source_logs.arn
+  value       = var.manage_cloudwatch_logs_source ? aws_lambda_function.cloudwatch_logs_source_logs["this"].arn : ""
   description = "Cloudwatch logs source lambda arn."
 }
 

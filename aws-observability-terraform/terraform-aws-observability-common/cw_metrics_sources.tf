@@ -2,14 +2,15 @@ resource "sumologic_cloudwatch_source" "cloudwatch_metrics_sources" {
   for_each = var.manage_cloudwatch_metrics_source ? toset(var.cloudwatch_metrics_namespaces) : []
 
   category      = "aws/observability/cloudwatch/metrics"
-  collector_id  = sumologic_collector.hosted.id
+  collector_id  = sumologic_collector.hosted["this"].id
   content_type  = "AwsCloudWatch"
   name          = "${var.cloudwatch_metrics_source_name}-${each.value}"
-  scan_interval = local.scan_interval[regex("^AWS/(\\w+)$", each.value)[0]]
+  paused        = false
+  scan_interval = local.namespace_scan_interval[regex("^AWS/(\\w+)$", each.value)[0]]
 
   authentication {
     type     = "AWSRoleBasedAuthentication"
-    role_arn = aws_iam_role.sumologic_source[0].arn
+    role_arn = aws_iam_role.sumologic_source["this"].arn
   }
 
   path {

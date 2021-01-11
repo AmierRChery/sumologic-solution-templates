@@ -1,8 +1,8 @@
 resource "sumologic_metadata_source" "this" {
-  for_each = range(local.manage_metadata_source ? 1 : 0)
+  for_each = toset(var.manage_metadata_source ? ["this"] : [])
 
   category      = "aws/observability/ec2/metadata"
-  collector_id  = sumologic_collector[0].hosted.id
+  collector_id  = sumologic_collector.hosted["this"].id
   content_type  = "AwsMetadata"
   name          = var.metadata_source_name
   paused        = false
@@ -10,7 +10,7 @@ resource "sumologic_metadata_source" "this" {
 
   authentication {
     type     = "AWSRoleBasedAuthentication"
-    role_arn = aws_iam_role.sumologic_source[0].id
+    role_arn = aws_iam_role.sumologic_source["this"].id
   }
 
   path {
@@ -21,9 +21,10 @@ resource "sumologic_metadata_source" "this" {
 
 #TODO: sumoresource.py
 data "external" "account_check" {
-  program = ["echo", "account_check"]
+  program = ["echo", "-e", "{\"enterprise\":\"true\",\"paid\":\"true\"}"]
 
   query = {
     account_id = "id"
   }
 }
+# Error: command "echo" produced invalid JSON: json: cannot unmarshal bool into Go value of type string

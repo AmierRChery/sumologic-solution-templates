@@ -84,7 +84,8 @@ variable "cloudwatch_metrics_namespaces" {
   description = "List of the Cloudwatch metrics namespaces."
 
   validation {
-    condition     = [for namespace in var.cloudwatch_metrics_namespaces : can(regex("AWS/(?:ApplicationELB|ApiGateway|DynamoDB|Lambda|RDS|ECS|ElastiCache|ELB|NetworkELB)", namespace))]
+    # regex check that each element of the input namespaces is one of the accepted values, contains check if any of the can function returns was false, return false from logical if any of the returns were false
+    condition     = contains([for namespace in var.cloudwatch_metrics_namespaces : can(regex("AWS/(?:ApplicationELB|ApiGateway|DynamoDB|Lambda|RDS|ECS|ElastiCache|ELB|NetworkELB)", namespace))], false) != true
     error_message = "Namespaces should be from provided default list."
   }
 }
@@ -197,7 +198,7 @@ variable "log_format" {
 
 variable "include_log_group_info" {
   type        = bool
-  default     = false #TODO: module declare should override to true
+  default     = false
   description = "Enable loggroup/logstream values in logs."
 }
 

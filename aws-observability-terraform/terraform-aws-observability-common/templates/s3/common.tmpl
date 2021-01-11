@@ -42,7 +42,7 @@
       "Sid":"AWSAlbLogsPutObjects",
       "Effect":"Allow",
       "Principal": {
-        "AWS":"arn:aws:iam:: [Region2ELBAccountId, 'AWS::Region', AccountId]:root" #TODO: verify
+        "AWS":"arn:aws:iam::${elb_account_id}:root"
       },
       "Action":"s3:PutObject",
       "Resource": [
